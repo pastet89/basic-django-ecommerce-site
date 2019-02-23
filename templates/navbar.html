@@ -1,0 +1,32 @@
+      {% load mptt_tags %}
+      {% load add_pk_to_slug %}
+      <nav class="site-navigation text-right text-md-center" role="navigation">
+        <div class="container">
+          <ul class="site-menu js-clone-nav d-none d-md-block">
+            <li><a href="/">Home</a></li>
+            <li class="has-children active">
+              <a href="index.html">Categories</a>
+              <ul class="dropdown">
+                {% recursetree categories %}
+                <li {{ node.is_leaf_node|yesno:",class=\"has-children\""|safe }}>
+                {% if  not node.is_leaf_node %}
+                    <a class="noclick" href="#">
+                {% else %}
+                    <a href="/{{node|add_pk_to_slug}}">
+                {% endif %}
+                {{ node.name }}</a>
+                {% if not node.is_leaf_node %}
+                <ul class="dropdown">
+                 {{ children }}
+                 </ul>
+                {% endif %}
+                </li>
+                 {% endrecursetree %}
+              </ul>
+            </li>
+            <li><a class="noclick" href="#">Promotions</a></li>
+            <li><a class="noclick" href="#">New products</a></li>
+            <li><a class="noclick" href="#">Contact</a></li>
+          </ul>
+        </div>
+      </nav>
