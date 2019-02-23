@@ -68,20 +68,21 @@ jQuery(document).ready(function($) {
     }
     
     function update_cart(removed_item_id=null) {
-        let request_params = {};
+        let items = [];
         $(".cart-item").each(function () {
             let product_id = $(this).attr("id").split("_").pop();
-            let quantity = $("#quantity_"+product_id).val(0);
-            request_params[product_id] = {
+            let quantity = $("#quantity_"+product_id).val();
+            let data = {
                 "product_id": product_id,
                 "quantity": quantity
             };
+            items.push(data);
         });
-        alert(request_params)
-        $.post( "/cart/update/", {
-                csrfmiddlewaretoken: csrf_token,
-                request_params: request_params
+        $.post("/cart/update/", {
+                "csrfmiddlewaretoken": csrf_token,
+                "items": JSON.stringify(items)
         }).done(function( data ) {
+            update_cart_count(data.items_in_cart);
             if (removed_item_id != null) {
                 $("#product_"+product_id).remove(function(){
                     update_cart_prices_html();
@@ -107,17 +108,15 @@ jQuery(document).ready(function($) {
     $(".add_to_cart").click(function(){
         let product_id = $(this).attr("id").split("_").pop();
         let quantity = $("#quantity_"+product_id).val();
+        let items = [{
+                "product_id": product_id,
+                "quantity": quantity
+        }];
         $.post( "/cart/add/", {
-                csrfmiddlewaretoken: csrf_token,
-                data: {
-                    product_id: {
-                        quantity: quantity,
-                        product_id: product_id     
-                    }
-                }
-
+                "csrfmiddlewaretoken": csrf_token,
+                "items": JSON.stringify(items)
         }).done(function(data) {
-            update_cart_count(data.items_in_cart)
+            update_cart_count(data.items_in_cart);
         });
     });
     /*

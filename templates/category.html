@@ -16,7 +16,7 @@
                     <div class="item">
                         <div class="block-4 text-center">
                           <figure class="block-4-image">
-                            <img src="{% static product.image.url|product_img_path %}" alt="{{product.name}}" class="img-fluid">
+                            <img src="{% static product.image|product_img_path %}" alt="{{product.name}}" class="img-fluid">
                           </figure>
                           <div class="block-4-text p-4">
                             <h3><a href="#">{{product.name}}</a></h3>
@@ -25,7 +25,7 @@
                             <p>
                                 <div class="product_count">
                                 <label for="quantity">Quantity:</label>
-                                <input type="text" name="quantity" id="quantity_{{product.id}}" size="3" maxlength="12" value="1" title="Quantity:" class="input-text qty">
+                                <input type="text" name="quantity" id="quantity_{{product.id}}" size="3" maxlength="12" value="{{product.display_quantity}}" title="Quantity:" class="input-text qty">
                                 <button id="increase_{{product.id}}" class="lnr modifyQty" type="button"><i>+</i></button>
                                 <button id="decrease_{{product.id}}" class="lnr modifyQty" type="button"><i>-</i></button>
                             </div>

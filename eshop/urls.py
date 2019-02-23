@@ -22,8 +22,8 @@ from ebag import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('category/<int:cat_id>/<slug:cat_name>/', views.CategoryView.as_view(), name='category'),
-    path('cart/add/', views.add_to_cart, name='add_to_cart'),
-    path('cart/update/', views.update_cart, name='update_cart'),
+    path('cart/add/', views.ajax_session_cart, name='add_to_cart'),
+    path('cart/update/', views.ajax_session_cart, name='update_cart'),
     path('', views.home_view, name='home_view'),
     path('cart/', views.cart_view, name='cart_view'),
 ]
