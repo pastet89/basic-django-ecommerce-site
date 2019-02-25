@@ -60,6 +60,12 @@ a {
     -moz-osx-font-smoothing: grayscale;
 }
 
+.no-left-margin {
+    margin-left:0px !important;
+}
+.error-msg {
+    color: red;
+}
 .btn {
   text-transform: uppercase;
   position: relative;

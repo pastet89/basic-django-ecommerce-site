@@ -1,10 +1,11 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import Category, Product
 from django.views import View
 from django.views.generic import ListView, DetailView
 from django.conf import settings
 from django.http import JsonResponse, HttpResponse
 from django.forms.models import model_to_dict
+from .forms import CheckoutForm
 import json
 # Create your views here.
 
@@ -17,6 +18,9 @@ class BaseMixin:
         ctx["items_in_cart"] = 0
         if "cart" in request.session:
             ctx["cart"] = [item for key, item in request.session["cart"].items()]
+            cart_total =  sum([int(item["quantity"]) * float(item["product_data"]["price"]) for item in ctx["cart"]])
+            ctx["cart_total"] = cart_total
+            
         else:
             ctx["cart"] = []
         ctx["items_in_cart"] = len(ctx["cart"])
@@ -26,15 +30,23 @@ def home_view(request):
     return render(request, "home.html", BaseMixin.common_data(request))
 
 def cart_view(request):
-    ctx = {}
-    if "cart" not in request.session:
-        ctx["cart"] = {} 
-    else:
-        ctx["cart"] = [item for key, item in request.session["cart"].items()]
-    return render(request, "cart.html", BaseMixin.common_data(request, ctx))
+    return render(request, "cart.html", BaseMixin.common_data(request))
+    
+def thank_you_view(request):
+    return render(request, "thank-you.html", BaseMixin.common_data(request))
 
-def update_cart():
-    pass
+def checkout_view(request):
+    form = CheckoutForm()
+    if request.method == "POST":
+        form = CheckoutForm(request.POST)
+        if form.is_valid():
+            del request.session["cart"]
+            request.session.save()
+            return redirect("thank_you_view")
+    ctx = {
+        "form": form
+    }
+    return render(request, "checkout.html", BaseMixin.common_data(request, ctx))
 
 def ajax_session_cart(request):
     #return HttpResponse(str(request.POST.getlist("items[]")))
