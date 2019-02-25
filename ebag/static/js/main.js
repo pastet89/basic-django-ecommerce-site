@@ -20,21 +20,16 @@ jQuery(document).ready(function($) {
         let product_id = element_data[1];
         let action = element_data[0];
         let min_val = 0;
-        if (action=="increase")
-        {
+        if (action=="increase") {
             $("#quantity_"+product_id).val(parseInt($("#quantity_"+product_id).val())+1);
-        } else if  (action=="decrease")
-        {
+        } else if  (action=="decrease") {
             let new_value = parseInt($("#quantity_"+product_id).val())-1;
             new_value = (new_value < min_val) ? min_val : new_value
            $("#quantity_"+product_id).val(new_value);
-        } else
-        {
+        } else {
             alert("Quantity modification error!");
         }
-        
         return false;
-        
     });
 
     function update_cart_count(items_num=-1) {
@@ -67,30 +62,50 @@ jQuery(document).ready(function($) {
         update_cart_prices_html();
     }
     
+    function get_product_cart_data(element) {
+        let product_id = element.attr("id").split("_").pop();
+        let quantity = $("#quantity_"+product_id).val();
+        return {
+            "product_id": product_id,
+            "quantity": quantity
+        };
+    }
+    
+    function send_ajax_cart_data(update_or_add, items, removed_item_id=null) {
+        console.log(items)
+        $.post( "/cart/"+update_or_add+"/", {
+                "csrfmiddlewaretoken": csrf_token,
+                "items": JSON.stringify(items)
+        }).done(function(data) {
+            if (update_or_add == "add") {
+                update_cart_count(data.items_in_cart);
+            } else if (update_or_add == "update") {
+                update_cart_count(data.items_in_cart);
+                if (removed_item_id != null) {
+                    $("#product_"+product_id).remove(function(){
+                        update_cart_prices_html();
+                    }); 
+                } else {
+                    update_cart_prices_html();
+                }
+            }
+        });
+    }
+    
+    $(".add-to-cart").click(function(){ 
+        let product_data = get_product_cart_data($(this));
+        let items = [product_data];
+        send_ajax_cart_data("add", items);
+    });
+    
+        
     function update_cart(removed_item_id=null) {
         let items = [];
         $(".cart-item").each(function () {
-            let product_id = $(this).attr("id").split("_").pop();
-            let quantity = $("#quantity_"+product_id).val();
-            let data = {
-                "product_id": product_id,
-                "quantity": quantity
-            };
-            items.push(data);
+            let product_data = get_product_cart_data($(this));
+            items.push(product_data);
         });
-        $.post("/cart/update/", {
-                "csrfmiddlewaretoken": csrf_token,
-                "items": JSON.stringify(items)
-        }).done(function( data ) {
-            update_cart_count(data.items_in_cart);
-            if (removed_item_id != null) {
-                $("#product_"+product_id).remove(function(){
-                    update_cart_prices_html();
-                }); 
-            } else {
-                update_cart_prices_html();
-            }
-        });
+        send_ajax_cart_data("update", items, removed_item_id);
     }
     
     $(".update-cart").click(function(){
@@ -105,23 +120,10 @@ jQuery(document).ready(function($) {
         });
     });
     
-    $(".add_to_cart").click(function(){
-        let product_id = $(this).attr("id").split("_").pop();
-        let quantity = $("#quantity_"+product_id).val();
-        let items = [{
-                "product_id": product_id,
-                "quantity": quantity
-        }];
-        $.post( "/cart/add/", {
-                "csrfmiddlewaretoken": csrf_token,
-                "items": JSON.stringify(items)
-        }).done(function(data) {
-            update_cart_count(data.items_in_cart);
-        });
-    });
+
     /*
      * 
-     * Builtin template functions
+     * Built-in template functions
      * */
 	var slider = function() {
 		$('.nonloop-block-3').owlCarousel({
