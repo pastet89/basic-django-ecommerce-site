@@ -20,7 +20,10 @@ class BaseMixin:
         ctx["items_in_cart"] = 0
         if "cart" in request.session:
             ctx["cart"] = [item for key, item in request.session["cart"].items()]
-            cart_total =  sum([int(item["quantity"]) * float(item["product_data"]["price"]) for item in ctx["cart"]])
+            cart_total =  sum([
+                int(item["quantity"]) * float(item["product_data"]["price"])
+                for item in ctx["cart"]
+            ])
             ctx["cart_total"] = cart_total
         else:
             ctx["cart"] = []
@@ -47,6 +50,23 @@ class BaseMixin:
             return function(request, *args, **kwargs)
         return inner_dec
 
+
+class CategoryView(ListView):
+    template_name = 'category.html'
+    model = Category
+        
+    def get_context_data(self, **kwargs):
+        ctx = super(__class__, self).get_context_data(**kwargs)
+        ctx['category'] = Category.objects.get(id=self.kwargs["cat_id"])
+        ctx['products'] = Product.objects.filter(category_id=self.kwargs["cat_id"]).values()
+        for product in ctx['products']:
+            product_id = str(product["id"])
+            if "cart" not in self.request.session or product_id not in self.request.session["cart"]:
+                product["display_quantity"] = 1
+            else:
+                product["display_quantity"] = self.request.session["cart"][product_id]["quantity"]
+            product["image"] = str(product["image"])
+        return BaseMixin.common_data(self.request, ctx)
 
 def home_view(request):
     return render(request, "home.html", BaseMixin.common_data(request))
@@ -111,20 +131,3 @@ def ajax_session_cart(request):
         'cart': cart
     }
     return JsonResponse(data)
-
-class CategoryView(ListView):
-    template_name = 'category.html'
-    model = Category
-        
-    def get_context_data(self, **kwargs):
-        ctx = super(__class__, self).get_context_data(**kwargs)
-        ctx['category'] = Category.objects.get(id=self.kwargs["cat_id"])
-        ctx['products'] = Product.objects.filter(category_id=self.kwargs["cat_id"]).values()
-        for product in ctx['products']:
-            product_id = str(product["id"])
-            if "cart" not in self.request.session or product_id not in self.request.session["cart"]:
-                product["display_quantity"] = 1
-            else:
-                product["display_quantity"] = self.request.session["cart"][product_id]["quantity"]
-            product["image"] = str(product["image"])
-        return BaseMixin.common_data(self.request, ctx)
