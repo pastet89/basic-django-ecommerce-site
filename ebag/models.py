@@ -16,7 +16,7 @@ class Product(models.Model):
         return '/'.join([EbagConfig.name, settings.STATIC_URL, img_folder, str(uuid.uuid4()) +"."+extension])
         
     name = models.CharField(max_length=100)
-    category = TreeForeignKey('Category', null=True, blank=True, db_index=True, on_delete=models.CASCADE)
+    category = TreeForeignKey('Category', db_index=True, on_delete=models.CASCADE)
     description = models.TextField(blank=False, max_length=500)
     price = models.DecimalField(blank=False, max_digits=10, decimal_places=2)
     slug = models.SlugField()
@@ -33,7 +33,7 @@ class Category(MPTTModel):
         verbose_name_plural = "Categories"
         
     name = models.CharField(max_length=100)
-    parent = TreeForeignKey('self', null=True, blank=True,  related_name='children', db_index=True, on_delete=models.CASCADE)
+    parent = TreeForeignKey('self', null=True, blank=True, related_name='children', db_index=True, on_delete=models.CASCADE)
     last_update = models.DateTimeField(auto_now=True)
     slug = models.SlugField(blank=True)
 

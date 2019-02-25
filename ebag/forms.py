@@ -2,6 +2,7 @@ from django.conf import settings
 from django import forms
 from .models import Category
 
+
 class CategoryForm(forms.ModelForm):
     class Meta:
         model = Category
@@ -21,14 +22,83 @@ class CheckoutForm(forms.Form):
         ('2', 'Serbia'),
         ('3', 'USA')
     )
-    country = forms.ChoiceField(label='Country', widget=forms.Select(attrs={'class': 'form-control'}), choices=COUNTRIES)
-    first_name = forms.CharField(label='First Name', max_length=30, widget=forms.TextInput(attrs={'class': 'form-control'}))
-    last_name = forms.CharField(label='Last Name', max_length=30, widget=forms.TextInput(attrs={'class': 'form-control'}))
-    company_name = forms.CharField(label='Company Name', required=False, max_length=100, widget=forms.TextInput(attrs={'class': 'form-control'}))
-    address_1 = forms.CharField(label='Address',  max_length=100, widget=forms.TextInput(attrs={'placeholder': 'Street Address', 'class': 'form-control'}))
-    address_2 = forms.CharField(max_length=200, required=False, widget=forms.TextInput(attrs={'placeholder': 'Apartment, suite, unit, etc.', 'class': 'form-control'}))
-    state_region = forms.CharField(label='State / Region', max_length=50, widget=forms.TextInput(attrs={'class': 'form-control'}))
-    post_code = forms.IntegerField(label='Post code', widget=forms.NumberInput(attrs={'class': 'form-control'}))
-    email = forms.EmailField(label='Email Address', max_length=50, widget=forms.EmailInput(attrs={'class': 'form-control'}))
-    phone = forms.IntegerField(label='Phone', widget=forms.NumberInput(attrs={'class': 'form-control'}))
-    order_notes = forms.CharField(label='Additional notes', required=False, widget=forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Write your notes here...', 'cols': 30, 'rows': 5}))
+    country = forms.ChoiceField(label='Country',
+                                widget=forms.Select(
+                                    attrs={
+                                        'class': 'form-control'
+                                    }),
+                                    choices=COUNTRIES
+                                )
+    first_name = forms.CharField(label='First Name',
+                                 max_length=30,
+                                 widget=forms.TextInput(
+                                     attrs={
+                                         'class': 'form-control'
+                                     })
+                                 )
+    last_name = forms.CharField(label='Last Name',
+                                max_length=30,
+                                widget=forms.TextInput(
+                                    attrs={
+                                        'class': 'form-control'
+                                     })
+                                 )
+    company_name = forms.CharField(label='Company Name',
+                                   required=False,
+                                   max_length=100,
+                                   widget=forms.TextInput(
+                                      attrs={
+                                        'class': 'form-control'
+                                      })
+                                   )
+    address_1 = forms.CharField(label='Address',
+                                max_length=100,
+                                widget=forms.TextInput(
+                                    attrs={
+                                        'placeholder': 'Street Address',
+                                        'class': 'form-control'
+                                    })
+                                )
+    address_2 = forms.CharField(max_length=200,
+                                required=False,
+                                widget=forms.TextInput(
+                                    attrs={
+                                        'placeholder': 'Apartment, suite, etc.'
+                                    })
+                                )
+    state_region = forms.CharField(label='State / Region',
+                                   max_length=50, 
+                                   widget=forms.TextInput(
+                                       attrs={
+                                           'class': 'form-control'
+                                       })
+                                    )
+    post_code = forms.IntegerField(label='Post code',
+                                   widget=forms.NumberInput(
+                                        attrs={
+                                            'class': 'form-control'
+                                        })
+                                    )
+    email = forms.EmailField(label='Email Address',
+                             max_length=50,
+                             widget=forms.EmailInput(
+                                 attrs={
+                                     'class': 'form-control'
+                                 })
+                             )
+    phone = forms.IntegerField(label='Phone',
+                               widget=forms.NumberInput(
+                                   attrs={
+                                       'class': 'form-control'
+                                    })
+                                )
+    order_notes = forms.CharField(label='Additional notes',
+                                  required=False,
+                                  widget=forms.Textarea(
+                                      attrs={
+                                          'class': 'form-control',
+                                          'placeholder': 'Any special notes?',
+                                           'cols': 30,
+                                           'rows': 5
+                                        })
+                                  )
