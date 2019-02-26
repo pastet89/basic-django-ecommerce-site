@@ -10,18 +10,27 @@ jQuery(document).ready(function($) {
     /*
      * 
      * Custom app functions
+     * 
+     * 
      * */
     $('.noclick').click(function(e){
        e.preventDefault();
     });
     
     $(".modify-quantity").click(function(){
+        /*
+        * Updates the product quantity on the
+        * category page when the user clicks on the
+        * plus/minus buttons.
+        */
         let element_data = $(this).attr("id").split("_");
         let product_id = element_data[1];
         let action = element_data[0];
         let min_val = 0;
         if (action=="increase") {
-            $("#quantity_"+product_id).val(parseInt($("#quantity_"+product_id).val())+1);
+            $("#quantity_"+product_id).val(
+                parseInt($("#quantity_"+product_id).val())+1
+            );
         } else if  (action=="decrease") {
             let new_value = parseInt($("#quantity_"+product_id).val())-1;
             new_value = (new_value < min_val) ? min_val : new_value
@@ -33,6 +42,11 @@ jQuery(document).ready(function($) {
     });
 
     function update_cart_count(items_num=-1) {
+        /*
+        * Updates the cart indicator showing the number
+        * of products in the cart and respectively hides it
+        * if there are no products inside.
+        */
         if (items_num < 0) {
             items_num = items_in_cart;
         }
@@ -46,10 +60,18 @@ jQuery(document).ready(function($) {
     }
     
     function update_cart_prices_html() {
+        /*
+        * Updates the product totals (price * quantity)
+        * and the cart total at the cart page. Called
+        * when the user changes the product quantity
+        * or removes a product.
+        */
        let total_cart_amount = 0;
         $(".cart-item").each(function () {
             let quantity = parseInt($(this).find('.item-quantity').val());
-            let unit_price = parseFloat($(this).find('.price-placeholder').html());
+            let unit_price = parseFloat(
+                $(this).find('.price-placeholder').html()
+            );
             let total_price = quantity * unit_price;
             total_cart_amount += total_price;
             $(this).find('.total-placeholder').html(total_price);
@@ -58,6 +80,10 @@ jQuery(document).ready(function($) {
     }
     
     function get_product_cart_data(element) {
+        /*
+        * Extracts the product id and quantity
+        * from a given HTML element.
+        */
         let product_id = element.attr("id").split("_").pop();
         let quantity = $("#quantity_"+product_id).val();
         return {
@@ -67,33 +93,52 @@ jQuery(document).ready(function($) {
     }
     
     function send_ajax_cart_data(update_or_add, items, removed_item_id=null) {
+        /*
+        * Sends via AJAX a POST request to the back-end so that the
+        * cart is updated in the session. Called both on the category
+        * and cart pages. Updates the HTML after a successful request.
+        */
         console.log(items)
         $.post( "/cart/"+update_or_add+"/", {
                 "csrfmiddlewaretoken": csrf_token,
                 "items": JSON.stringify(items)
         }).done(function(data) {
-            if (update_or_add == "add") {
-                update_cart_count(data.items_in_cart);
-            } else if (update_or_add == "update") {
-                update_cart_count(data.items_in_cart);
-                if (removed_item_id != null) {
-                    $("#product_"+product_id).remove(function(){
+            if (data.success == 1) {
+                if (update_or_add == "add") {
+                    update_cart_count(data.items_in_cart);
+                } else if (update_or_add == "update") {
+                    update_cart_count(data.items_in_cart);
+                    if (removed_item_id != null) {
+                        $("#product_"+product_id).remove(function(){
+                            update_cart_prices_html();
+                        }); 
+                    } else {
                         update_cart_prices_html();
-                    }); 
-                } else {
-                    update_cart_prices_html();
+                    }
                 }
+            } else {
+                alert("AJAX error!");
             }
         });
     }
     
-    $(".add-to-cart").click(function(){ 
+    $(".add-to-cart").click(function(){
+        /*
+        * Calls send_ajax_cart_data() from the category page
+        * when new products are added to the cart or their
+        * quantity is modified.
+        */
         let product_data = get_product_cart_data($(this));
         let items = [product_data];
         send_ajax_cart_data("add", items);
     });
         
     function update_cart(removed_item_id=null) {
+        /*
+        * Calls send_ajax_cart_data() from the cart page
+        * when the products quantity is modified or they
+        * are removed.
+        */
         let items = [];
         $(".cart-item").each(function () {
             let product_data = get_product_cart_data($(this));
@@ -103,10 +148,21 @@ jQuery(document).ready(function($) {
     }
     
     $(".update-cart").click(function(){
+        /*
+        * Updates the cart, triggered on the cart page.
+        */
         update_cart();
     });
     
     $(".remove-item").click(function(){
+        /*
+        * Triggered on the cart page. Removes a product
+        * by setting its quantity to 0 after hiding it
+        * visually and calling update_cart(). Sends as a
+        * parameter the removed id and after the AJAX call
+        * is performed, the send_ajax_cart_data() will remove
+        * the HTML element.
+        */
         let product_id = $(this).attr("id").split("_").pop();
         $("#product_"+product_id).fadeOut(400, function(){
             $("#quantity_"+product_id).val(0);
@@ -122,6 +178,8 @@ jQuery(document).ready(function($) {
     /*
      * 
      * Built-in template functions
+     * 
+     * 
      * */
 	var slider = function() {
 		$('.nonloop-block-3').owlCarousel({
