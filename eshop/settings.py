@@ -128,7 +128,7 @@ STATIC_URL = "/static/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "ebag", "static", "images")
 MEDIA_URL = STATIC_URL + "images/"
 
-# Subcategories level identation in admin panel
+# Subcategories level indentation in admin panel
 MPTT_ADMIN_LEVEL_INDENT = 20
 
 # String for replacement with item id

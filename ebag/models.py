@@ -55,7 +55,7 @@ class Category(MPTTModel):
 
     def save(self, *args, **kwargs):
         """
-        Autogenerates a slug, containing a defined in the settings
+        Auto-generates a slug, containing a defined in the settings
         placeholder for the category id, which will be later replaced
         in the templates. The category id can not be included in the
         slug by the time of the creation as the category and its id

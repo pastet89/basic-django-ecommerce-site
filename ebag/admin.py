@@ -9,7 +9,7 @@ from django.db.models import F
 class CategoryDraggableMPTTAdmin(DraggableMPTTAdmin):
     """
     Applies the Django-MPTT draggable widget to the categories
-    so that their levels can be viewd and changed with a single
+    so that their levels can be viewed and changed with a single
     mouse move.
     """
     form = forms.CategoryForm

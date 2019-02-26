@@ -16,7 +16,7 @@ class CategoryForm(forms.ModelForm):
         """
         Doesn't allow the PK_PLACEHOLDER specified in the settings
         to be included in the category name as it has a special function.
-        It will be later replaced in the slug url with the category id.
+        It will be later replaced in the slug URL with the category id.
         The slug can not be created with id during the
         category creation as the object still doesn't exist so is not assigned
         any id, hence the need of the placeholder.
