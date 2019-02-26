@@ -31,7 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    #default:
+    # default:
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     
-    #own:
+    # own:
     'ebag',
     'mptt',
 ]
@@ -128,8 +128,8 @@ STATIC_URL = "/static/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "ebag", "static", "images")
 MEDIA_URL = STATIC_URL + "images/"
 
-#SUBCATEGORIES LEVEL IDENTATION IN ADMIN PANEL
+# Subcategories level identation in admin panel
 MPTT_ADMIN_LEVEL_INDENT = 20
 
-#String for replacement with item id
+# String for replacement with item id
 PK_PLACEHOLDER = "{%pk%}"
