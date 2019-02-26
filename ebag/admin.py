@@ -7,10 +7,21 @@ from django.db.models import F
 
 
 class CategoryDraggableMPTTAdmin(DraggableMPTTAdmin):
+    """
+    Applies the Django-MPTT draggable widget to the categories
+    so that their levels can be viewd and changed with a single
+    mouse move.
+    """
     form = forms.CategoryForm
-    exclude = ('slug',)
 
 class ProductModelAdmin(admin.ModelAdmin):
+    """
+    Excludes the slug field from the form as it should be
+    generated automatically. Filters the categories in a way
+    that ensures that a product can be put only in a leaf (bottom)
+    node and not in a category which contains subcategories.
+    """
+    
     exclude = ('slug',)
     def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
         if db_field.name == "category":

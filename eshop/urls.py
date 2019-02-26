@@ -17,7 +17,8 @@ from django.contrib import admin
 from django.urls import path
 from django.conf.urls import url
 from ebag import views
-
+from django.conf.urls.static import static
+from django.conf import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -28,4 +29,4 @@ urlpatterns = [
     path('cart/', views.cart_view, name='cart_view'),
     path('checkout/', views.checkout_view, name='checkout_view'),
     path('thank-you/', views.thank_you_view, name='thank_you_view'),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

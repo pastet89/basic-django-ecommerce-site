@@ -1,6 +1,5 @@
 {% extends 'base.html' %}
 {% load static %}
-{% load product_img_path %}
 {% block content %}
     <div class="site-section">
       <div class="container">
@@ -22,7 +21,7 @@
                     {% for item in cart %}
                     <tr class="cart-item" id="product_{{item.product_data.id}}">
                         <td class="product-thumbnail">
-                          <img src="{% static item.product_data.image|product_img_path %}" alt="Image" class="img-fluid">
+                          <img src="{% get_media_prefix %}{{ item.product_data.image }}" alt="Image" class="img-fluid">
                         </td>
                         <td class="product-name">
                           <h2 class="h5 text-black">

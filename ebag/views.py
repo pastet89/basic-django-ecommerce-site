@@ -60,15 +60,17 @@ class CategoryView(ListView):
         ctx['category'] = Category.objects.get(id=self.kwargs["cat_id"])
         ctx['products'] = Product.objects.filter(category_id=self.kwargs["cat_id"]).values()
         for product in ctx['products']:
-            product_id = str(product["id"])
+            #product_id = str(product["id"])
             if "cart" not in self.request.session or product_id not in self.request.session["cart"]:
                 product["display_quantity"] = 1
             else:
                 product["display_quantity"] = self.request.session["cart"][product_id]["quantity"]
-            product["image"] = str(product["image"])
+            #product["image"] = str(product["image"])
         return BaseMixin.common_data(self.request, ctx)
 
 def home_view(request):
+    #ctx = BaseMixin.common_data(request)
+    #return HttpResponse(type(ctx['categories'][0]))
     return render(request, "home.html", BaseMixin.common_data(request))
 
 @BaseMixin.verify_cart_not_empty

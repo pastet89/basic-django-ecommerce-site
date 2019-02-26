@@ -1,6 +1,5 @@
 {% extends 'base.html' %}
 {% load static %}
-{% load product_img_path %}
 {% block content %}
 <div class="site-section block-3 site-blocks-2 bg-light">
       <div class="container">
@@ -16,7 +15,7 @@
                     <div class="item">
                         <div class="block-4 text-center">
                           <figure class="block-4-image">
-                            <img src="{% static product.image|product_img_path %}" alt="{{product.name}}" class="img-fluid">
+                            <img src="{% get_media_prefix %}{{product.image}}" alt="{{product.name}}" class="img-fluid">
                           </figure>
                           <div class="block-4-text p-4">
                             <h3><a href="#">{{product.name}}</a></h3>

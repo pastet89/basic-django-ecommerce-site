@@ -4,6 +4,7 @@ from django.template.defaultfilters import slugify
 from .apps import EbagConfig
 from django.conf import settings
 import uuid
+import os
 # Create your models here.
 # Продукти - имат име, описание, цена снимка.
 
@@ -11,15 +12,15 @@ import uuid
         
 class Product(models.Model):
     def save_file_with_id_name(self, filename):
-        img_folder = 'product_img'
-        extension = filename.split(".")[-1]
-        return '/'.join([EbagConfig.name, settings.STATIC_URL, img_folder, str(uuid.uuid4()) +"."+extension])
+        file_ = filename.split(os.sep)[-1]
+        extension = ".".join(file_.split(".")[-1:])
+        filename = str(uuid.uuid4()) + "." + extension
+        return filename
         
     name = models.CharField(max_length=100)
     category = TreeForeignKey('Category', db_index=True, on_delete=models.CASCADE)
     description = models.TextField(blank=False, max_length=500)
     price = models.DecimalField(blank=False, max_digits=10, decimal_places=2)
-    slug = models.SlugField()
     image = models.ImageField(upload_to=save_file_with_id_name)
 
     def __str__(self):
