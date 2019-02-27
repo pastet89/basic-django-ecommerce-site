@@ -133,3 +133,7 @@ MPTT_ADMIN_LEVEL_INDENT = 20
 
 # String for replacement with item id
 PK_PLACEHOLDER = "{%pk%}"
+
+# AJAX error messages
+ERR_MSG_NO_PRODUCT = "Invalid product_id!"
+ERR_MSG_INVALID_PARAMS = "Invalid parameters!"

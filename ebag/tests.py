@@ -1,8 +1,12 @@
-from django.test import TestCase
+from django.test import TestCase, Client
+from django.test.client import RequestFactory
+from django.test.utils import setup_test_environment, teardown_test_environment
+from django.urls import reverse
 from django.db import models
 from django.conf import settings
 from .templatetags import add_pk_to_slug
 from .models import Category, Product
+from . import views
 from .forms import CategoryForm, CheckoutForm
 from decimal import Decimal
 from mptt.admin import DraggableMPTTAdmin
@@ -12,14 +16,36 @@ from django.template.defaultfilters import slugify
 from django.contrib import admin
 from datetime import datetime
 import os
+import json
 import unittest
 # Create your tests here.
 
-"""
+
+class TestingHelper:
+    def create_cat_and_product(self):
+        test_image_src = settings.MEDIA_ROOT + os.sep + "test-img.png"
+        if not os.path.isfile(test_image_src):
+            raise unittest.SkipTest("Test image for upload missing!")
+        self.cat = Category.objects.create(name="test-cat")
+        test_image_upload = SimpleUploadedFile(
+            name=test_image_src,
+            content=open(test_image_src, 'rb').read(),
+            content_type='image/png'
+        )
+        self.product = Product.objects.create(
+            category_id=self.cat.pk,
+            name="name",
+            description="description",
+            price=Decimal(10.00),
+            image=test_image_upload,
+        )
+    
+    def delete_product_image(self):
+        self.product.image.delete()
+        
 ##############################
-     Template tags tests
+#     Template tags tests
 #############################
-"""
 
 
 class TemplateTagsTestCase(TestCase):
@@ -43,11 +69,11 @@ class TemplateTagsTestCase(TestCase):
         self.assertEqual(expected_res, func_res)
 
 
-"""
+
 ##############################
-        Admin tests
+#        Admin tests
 #############################
-"""
+
 
 
 class CategoryDraggableMPTTAdminTestCase(TestCase):
@@ -124,11 +150,11 @@ class ProductModelAdminTestCase(TestCase):
         cls.product.image.delete()
 
 
-"""
+
 ##############################
-        Forms tests
+#        Forms tests
 #############################
-"""
+
 
 
 class CheckoutFormTestCase(TestCase):
@@ -210,11 +236,9 @@ class CategoryFormTestCase(TestCase):
         })
 
 
-"""
 ##############################
-        Models tests
+#        Models tests
 #############################
-"""
 
 
 class ProductTestCase(TestCase):
@@ -283,3 +307,293 @@ class CategoryTestCase(TestCase):
                 self.assertIsInstance(cat.parent, instance)
             else:
                 self.assertIs(cat.parent, None)
+
+
+##############################
+#        Views tests
+#############################
+
+        """
+        self.client = Client()
+        # Test my_view() as if it were deployed at /customer/details
+        response = my_view(request)
+        #setup_test_environment()
+        self.assertEqual(response.status_code, 200)"""
+
+class GeneralContextMixinTestCase(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.request = self.factory.get('/')
+        self.request.session = {}
+        self.cat = Category.objects.create()
+        
+    def test_categories_in_common_data(self):
+        """
+        Test if common_data() returns as a dictionary
+        the stored categories in the DB.
+        """
+        common_data = views.GeneralContextMixin.common_data(self.request)
+        self.assertIsInstance(common_data, dict)
+        self.assertTrue("categories" in common_data)
+        self.assertEqual(len(common_data["categories"]), 1)
+        self.assertEqual(common_data["categories"].values()[0]["id"], self.cat.pk)
+        
+        
+    def test_common_data_empty_cart(self):
+        """
+        Test if common_data() returns proper data when there
+        are no items in the cart stored in the session.
+        """
+        common_data = views.GeneralContextMixin.common_data(self.request)
+        self.assertIsInstance(common_data, dict)
+        self.assertEqual(common_data["items_in_cart"], 0)
+        
+    def test_common_data_full_cart(self):
+        """
+        Test if common_data() returns proper data when there
+        are items in the cart stored in the session.
+        """
+        quantity = 2
+        price = 4.99
+        self.request.session = {
+            "cart": {
+                "5": {
+                    "quantity": quantity,
+                    "product_data": {
+                        "id": 1,
+                        "price": price,
+                    }
+                }
+            }
+        }
+        common_data = views.GeneralContextMixin.common_data(self.request)
+        self.assertIsInstance(common_data, dict)
+        self.assertEqual(common_data["cart"], [self.request.session["cart"]["5"]])
+        self.assertEqual(common_data["items_in_cart"], 1)
+        self.assertEqual(common_data["cart_total"], quantity * price)
+        
+    def test_common_data_add_to_ctx_param(self):
+        """
+        Test if common_data() includes in the returned data a
+        dictionary, passed as a second parameter.
+        """
+        
+        my_dict = {
+            "key": "val"
+        }
+        common_data = views.GeneralContextMixin.common_data(self.request, my_dict)
+        self.assertIsInstance(common_data, dict)
+        self.assertTrue("categories" in common_data)
+        self.assertTrue("items_in_cart" in common_data)
+        self.assertEqual(common_data["key"], "val")
+        
+    
+class FunctionBasedViewsTestCase(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.request = self.factory.get('/')
+        self.request.session = {}
+
+    def test_home_view(self):
+        response = views.home_view(self.request)
+        self.assertEqual(response.status_code, 200)
+
+    def test_cart_view_empty_cart(self):
+        """
+        Test if cart_view redirects to home_view
+        if the cart is empty
+        """
+        response = views.cart_view(self.request)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse("home_view"))
+        
+    def test_cart_view_full_cart(self):
+        """
+        Test if cart_view loads successfully
+        if the cart is not empty
+        """
+        self.request.session = {"cart": {}}
+        response = views.cart_view(self.request)
+        self.assertEqual(response.status_code, 200)
+        
+    def test_checkout_view_empty_cart_bad_refferer(self):
+        """
+        Test if checkout_view redirects to home_view
+        if the cart is empty and the user is not coming
+        from /cart/
+        """
+        response = views.checkout_view(self.request)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse("home_view"))
+
+    def test_checkout_view_empty_cart(self):
+        """
+        Test if checkout_view redirects to home_view
+        if the user is coming from /cart/, but the cart
+        is empty
+        """
+        response = views.checkout_view(self.request)
+        self.request.META["HTTP_REFERER"] = '/cart/'
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse("home_view"))
+
+    def test_checkout_view_non_valid_referrer(self):
+        """
+        Test if checkout_view redirects to home_view if
+        the cart is not empty, but user is not coming from
+        /cart/
+        """
+        self.request.session = {"cart": {}}
+        response = views.checkout_view(self.request)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse("home_view"))
+
+    def test_checkout_view_full_cart_valid_referrer(self):
+        """
+        Test if checkout_view loads successfully
+        if the cart is not empty and the user is coming
+        from /cart/
+        """
+        self.request.session = {"cart": {}}
+        self.request.META["HTTP_REFERER"] = '/cart/'
+        response = views.checkout_view(self.request)
+        self.assertEqual(response.status_code, 200)
+        
+    def test_thank_you_view_valid_referrer(self):
+        """
+        Test if thank_you view loads successfully
+        if the user is coming from /checkout/
+        """
+        self.request.META["HTTP_REFERER"] = '/checkout/'
+        response = views.thank_you_view(self.request)
+        self.assertEqual(response.status_code, 200)
+
+    def test_thank_you_view_bad_referrer(self):
+        """
+        Test if thank_you view redirects to home_view
+        if the user is not coming from /checkout/
+        """
+        response = views.thank_you_view(self.request)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse("home_view"))
+        
+class CategoryViewTestCase(TestCase):
+    def setUp(self):
+        test_image_src = settings.MEDIA_ROOT + os.sep + "test-img.png"
+        if not os.path.isfile(test_image_src):
+            raise unittest.SkipTest("Test image for upload missing!")
+        self.client = Client()
+        self.factory = RequestFactory()
+        self.cat = Category.objects.create(name="test-cat")
+        test_image_upload = SimpleUploadedFile(
+            name=test_image_src,
+            content=open(test_image_src, 'rb').read(),
+            content_type='image/png'
+        )
+        self.product = Product.objects.create(
+            category_id=self.cat.pk,
+            name="name",
+            description="description",
+            price=Decimal(10.00),
+            image=test_image_upload,
+        )
+
+        self.view_url = "/" + self.cat.slug.replace(settings.PK_PLACEHOLDER, str(self.cat.pk)) + "/"
+        self.request = self.factory.get(self.view_url)
+
+    def test_category_view(self):
+        try:
+            # If setup_test_environment haven't been called previously this
+            # will produce an AttributeError.
+            teardown_test_environment()
+        except AttributeError:
+            pass
+        setup_test_environment()
+        quantity = 2
+        self.request.session = {
+            "cart": {
+                "5": {
+                    "quantity": quantity,
+                    "product_data": {
+                        "id": 1,
+                        "price": 5,
+                    }
+                }
+            }
+        }
+        response = self.client.get(self.view_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue("categories" in response.context)
+        self.assertTrue("products" in response.context)
+        self.assertEqual(response.context["categories"].values()[0]["id"], self.cat.pk)
+        self.assertEqual(response.context["products"].values()[0]["id"], self.product.pk)
+        
+    def tearDown(self):
+        self.product.image.delete()
+
+class AJAXSessionCartTestCase(TestCase, TestingHelper):
+    
+    def setUp(self):
+        self.create_cat_and_product()
+        self.client = Client()
+        self.factory = RequestFactory()
+   
+    """
+        
+        def test_output(self):
+           response = self.client.post(reverse("add_to_cart"), {
+                "items": json.dumps([{
+                    "product_id": "x",
+                    "quantity": "5",
+                }])
+           })
+           print(response.content)
+    """
+
+    
+
+
+    def test_ajax_session_cart_no_product_error(self):
+        self.helper_ajax_session_cart_errors(
+            product_id=str(self.product.pk + 1),
+            quantity="5",
+            expected_msg=settings.ERR_MSG_NO_PRODUCT
+        )
+
+    def test_ajax_session_cart_invalid_args(self):
+        self.helper_ajax_session_cart_errors(
+            product_id="5",
+            quantity="b",
+            expected_msg=settings.ERR_MSG_INVALID_PARAMS
+        )
+        self.helper_ajax_session_cart_errors(
+            product_id="x",
+            quantity="5",
+            expected_msg=settings.ERR_MSG_INVALID_PARAMS
+        )
+        self.helper_ajax_session_cart_errors(
+            product_id="x",
+            quantity="y",
+            expected_msg=settings.ERR_MSG_INVALID_PARAMS
+        )
+        self.helper_ajax_session_cart_errors(
+            product_id={},
+            quantity=[],
+            expected_msg=settings.ERR_MSG_INVALID_PARAMS
+        )
+
+    def helper_ajax_session_cart_errors(self, product_id, quantity, expected_msg):
+        response = self.client.post(reverse("add_to_cart"), {
+            "items": json.dumps([{
+                "product_id": product_id,
+                "quantity": quantity,
+            }])
+        })
+        self.assertEqual(response.status_code, 200)
+        json_response = json.loads(response.content)
+        self.assertEqual((json_response["success"]), 0)
+        self.assertEqual((json_response["err_msg"]), expected_msg)
+    
+        
+    def tearDown(self):
+        self.delete_product_image()

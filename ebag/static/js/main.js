@@ -117,7 +117,7 @@ jQuery(document).ready(function($) {
                     }
                 }
             } else {
-                alert("AJAX error!");
+                alert("AJAX error:\n" + data.err_msg);
             }
         });
     }
