@@ -165,58 +165,6 @@ def checkout_view(request):
         GeneralContextMixin.common_data(request, ctx)
     )
 
-def ajax_session_cart(request):
-    success = 1
-    err_msg = ""
-    if "cart" not in request.session:
-        request.session["cart"] = {}
-    for item in json.loads(request.POST["items"]):
-        product_id = item["product_id"]
-        quantity = item["quantity"]
-        fields = (product_id, quantity)
-        if (not is_valid_ajax_input(fields)):
-            success = 0
-            err_msg = settings.ERR_MSG_INVALID_PARAMS
-            break
-        elif int(quantity) > 0:
-            product = Product.objects.filter(id=product_id)
-            if not product:
-                success = 0
-                err_msg = settings.ERR_MSG_NO_PRODUCT
-                break
-            else:
-                product_data = {
-                    k: str(v) for k, v in
-                    product.values()[0].items()
-                }
-                request.session["cart"].update(
-                    {product_id: {
-                        "quantity": quantity,
-                        "product_data": product_data
-                        }
-                     }
-                )
-        elif int(quantity) == 0:
-            try:
-                del request.session["cart"][product_id]
-            except KeyError:
-                pass
-    request.session.save()
-    items_in_cart = len(request.session["cart"])
-    if items_in_cart < 1:
-        del request.session["cart"]
-        request.session.save()
-    try:
-        cart = request.session["cart"]
-    except KeyError:
-        cart = {}
-    data = {
-        'success': success,
-        'err_msg': err_msg,
-        'items_in_cart': items_in_cart,
-        'cart': cart
-    }
-    return JsonResponse(data)
 
 class AJAXSessionCart(TemplateView):
     template_name= None
@@ -263,21 +211,6 @@ class AJAXSessionCart(TemplateView):
         self.success = 0
         self.err_msg = error
         return self.return_json()
-
-    """def process_item(self, item, int_quantity):
-        product_id = item["product_id"]
-        quantity = item["quantity"]
-        fields = (product_id, quantity)
-        if (not self.is_valid_ajax_input(fields)):
-            return self.return_error(settings.ERR_MSG_INVALID_PARAMS)
-        elif int_quantity > 0:
-            product = Product.objects.filter(id=product_id)
-            if not product:
-                return self.return_error(settings.ERR_MSG_NO_PRODUCT)
-            else:
-                self.update_cart_with_product(self, product_id, quantity, product)
-        elif int_quantity == 0:
-            self.delete_product_from_cart(product_id)"""
 
     def delete_product_from_cart(self, product_id):
         try:
