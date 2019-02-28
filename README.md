@@ -41,8 +41,10 @@ Browse the website at ```127.0.0.1:8000```, add items to cart and checkout.
 
 Run the unit tests from the root folder using:
 ```
-python3 manage.py test
+python3 manage.py test --nomigrations
 ```
+This is to avoid a strange problem with creating a migrations table
+during the tests. For this reason ```django-test-without-migrations``` is used.
 
 ### Notes:
 

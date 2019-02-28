@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     # own:
     'ebag',
     'mptt',
+    'test_without_migrations',
 ]
 
 MIDDLEWARE = [
@@ -137,3 +138,6 @@ PK_PLACEHOLDER = "{%pk%}"
 # AJAX error messages
 ERR_MSG_NO_PRODUCT = "Invalid product_id!"
 ERR_MSG_INVALID_PARAMS = "Invalid parameters!"
+
+# Used by django-test-without-migrations
+TEST_WITHOUT_MIGRATIONS_COMMAND = 'django_nose.management.commands.test.Command'
