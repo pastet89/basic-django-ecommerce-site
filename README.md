@@ -43,7 +43,7 @@ Run the unit tests from the root folder using:
 ```
 python3 manage.py test --nomigrations
 ```
-This is to avoid a strange problem with creating a migrations table
+This is to avoid a strange problem related the creation of a migrations table
 during the tests. For this reason ```django-test-without-migrations``` is used.
 
 ### Notes:
