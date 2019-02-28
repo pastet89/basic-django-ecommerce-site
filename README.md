@@ -24,7 +24,10 @@ mysql> source db.sql;
 pip3 install -r requirements.txt
 ```
 3. Enter your MySQL connection details in ```my.cnf```
-
+4. Run:
+```
+python3 manage.py migrate
+```
 
 ## Usage:
 
