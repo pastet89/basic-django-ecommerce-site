@@ -82,7 +82,8 @@ class CheckoutForm(forms.Form):
                                 required=False,
                                 widget=forms.TextInput(
                                     attrs={
-                                        'placeholder': 'Apartment, suite, etc.'
+                                        'placeholder': 'Apartment, suite, etc.',
+                                        'class': 'form-control'
                                     })
                                 )
     state_region = forms.CharField(label='State / Region',

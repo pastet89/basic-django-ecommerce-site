@@ -12,6 +12,7 @@ class CategoryDraggableMPTTAdmin(DraggableMPTTAdmin):
     so that their levels can be viewed and changed with a single
     mouse move.
     """
+    exclude = ('slug',)
     form = forms.CategoryForm
 
 
@@ -22,8 +23,6 @@ class ProductModelAdmin(admin.ModelAdmin):
     that ensures that a product can be put only in a leaf (bottom)
     node and not in a category which contains subcategories.
     """
-
-    exclude = ('slug',)
 
     def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
         """
