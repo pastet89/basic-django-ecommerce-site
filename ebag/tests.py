@@ -25,7 +25,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 class TestingHelper(object):
     """
     Contains helper methods, used on many places
-    by other classes,
+    by other classes.
     """
     def create_cat_and_product(self):
         """
