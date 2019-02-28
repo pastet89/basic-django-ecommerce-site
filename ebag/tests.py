@@ -22,8 +22,16 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 # Create your tests here.
 
 
-class TestingHelper:
+class TestingHelper(object):
+    """
+    Contains helper methods, used on many places
+    by other classes,
+    """
     def create_cat_and_product(self):
+        """
+        Creates a testing category and a product in this category.
+        Uploads a test product image.
+        """
         test_image_src = settings.MEDIA_ROOT + os.sep + "test-img.png"
         if not os.path.isfile(test_image_src):
             raise unittest.SkipTest("Test image for upload missing!")
@@ -44,6 +52,9 @@ class TestingHelper:
         self.product_data = product_data
 
     def delete_product_image(self):
+        """
+        Deletes the uploaded by create_cat_and_product() product image.
+        """
         self.product.image.delete()
 
 
