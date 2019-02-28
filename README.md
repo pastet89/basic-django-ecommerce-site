@@ -45,3 +45,5 @@ python3 manage.py test
 
 The website uses a free template from (Colorlib)[https://colorlib.com/].
 The JavaScript web app funcionality is located in ```ebag/static/js/main.js```.
+The ```test-img.png``` in the ```ebag/static/images``` folder
+is used by the unit tests and must be present in that location.
