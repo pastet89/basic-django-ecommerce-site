@@ -64,17 +64,24 @@ jQuery(document).ready(function($) {
         * Updates the product totals (price * quantity)
         * and the cart total at the cart page. Called
         * when the user changes the product quantity
-        * or removes a product.
+        * or removes a product. If the product quantity
+        * is set to zero, removes the product.
         */
        let total_cart_amount = 0;
         $(".cart-item").each(function () {
             let quantity = parseInt($(this).find('.item-quantity').val());
-            let unit_price = parseFloat(
-                $(this).find('.price-placeholder').html()
-            );
-            let total_price = quantity * unit_price;
-            total_cart_amount += total_price;
-            $(this).find('.total-placeholder').html(total_price);
+            if (quantity < 1) {
+                $(this).fadeOut(400, function(){
+                   $(this).remove(); 
+                });
+            } else {
+                let unit_price = parseFloat(
+                    $(this).find('.price-placeholder').html()
+                );
+                let total_price = quantity * unit_price;
+                total_cart_amount += total_price;
+                $(this).find('.total-placeholder').html(total_price.toFixed(2));
+            }
         });
         $('#total-cart-placeholder').html(total_cart_amount);
     }
@@ -92,13 +99,12 @@ jQuery(document).ready(function($) {
         };
     }
     
-    function send_ajax_cart_data(update_or_add, items, removed_item_id=null) {
+    function send_ajax_cart_data(update_or_add, items) {
         /*
         * Sends via AJAX a POST request to the back-end so that the
         * cart is updated in the session. Called both on the category
         * and cart pages. Updates the HTML after a successful request.
         */
-        console.log(items)
         $.post( "/cart/"+update_or_add+"/", {
                 "csrfmiddlewaretoken": csrf_token,
                 "items": JSON.stringify(items)
@@ -108,13 +114,7 @@ jQuery(document).ready(function($) {
                     update_cart_count(data.items_in_cart);
                 } else if (update_or_add == "update") {
                     update_cart_count(data.items_in_cart);
-                    if (removed_item_id != null) {
-                        $("#product_"+product_id).remove(function(){
-                            update_cart_prices_html();
-                        }); 
-                    } else {
-                        update_cart_prices_html();
-                    }
+                    update_cart_prices_html();
                 }
             } else {
                 alert("AJAX error:\n" + data.err_msg);
@@ -133,7 +133,7 @@ jQuery(document).ready(function($) {
         send_ajax_cart_data("add", items);
     });
         
-    function update_cart(removed_item_id=null) {
+    function update_cart() {
         /*
         * Calls send_ajax_cart_data() from the cart page
         * when the products quantity is modified or they
@@ -144,7 +144,7 @@ jQuery(document).ready(function($) {
             let product_data = get_product_cart_data($(this));
             items.push(product_data);
         });
-        send_ajax_cart_data("update", items, removed_item_id);
+        send_ajax_cart_data("update", items);
     }
     
     $(".update-cart").click(function(){
@@ -158,15 +158,12 @@ jQuery(document).ready(function($) {
         /*
         * Triggered on the cart page. Removes a product
         * by setting its quantity to 0 after hiding it
-        * visually and calling update_cart(). Sends as a
-        * parameter the removed id and after the AJAX call
-        * is performed, the send_ajax_cart_data() will remove
-        * the HTML element.
+        * visually and calling update_cart().
         */
         let product_id = $(this).attr("id").split("_").pop();
         $("#product_"+product_id).fadeOut(400, function(){
             $("#quantity_"+product_id).val(0);
-            update_cart(product_id);
+            update_cart();
         });
     });
     
