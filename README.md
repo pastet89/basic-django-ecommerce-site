@@ -31,8 +31,11 @@ pip3 install -r requirements.txt
 Add or edit categories and products from the admin panel. The website
 uses the default Django admin app, located at ```YOUR_HOST/admin```.
 You can login with user ```admin``` and password ```EbagAdmin123```.
-
-Browse the website at ```YOUR_HOST```, add items to cart and checkout.
+Run the Django test server:
+```
+python3 manage.py runserver
+```
+Browse the website at ```127.0.0.1:8000```, add items to cart and checkout.
 
 ### Tests:
 
