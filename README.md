@@ -13,24 +13,24 @@ The checkout process simply clears the cart session.
 
 ## Installation:
 
-1. Install the MySQL database running ```db.sql```:
+1. Install the MySQL database running ```eshop/db.sql```:
 ```
 $ mysql -u user -p
 mysql> USE `DB_NAME`;
-mysql> source db.sql;
+mysql> source eshop/db.sql;
 ```
 2. Install the required packages:
 ```
 pip3 install -r requirements.txt
 ```
-3. Enter your MySQL connection details in ```my.cnf```
+3. Enter your MySQL connection details in ```eshop/config/my.cnf```
 
 ## Usage:
 
 Add or edit categories and products from the admin panel. The website
 uses the default Django admin app, located at ```YOUR_HOST/admin```.
 You can login with user ```admin``` and password ```EbagAdmin123```.
-Run the Django test server:
+From the project folder ```eshop/``` run the Django test server:
 ```
 python3 manage.py runserver
 ```
@@ -38,7 +38,7 @@ Browse the website at ```127.0.0.1:8000```, add items to cart and checkout.
 
 ### Tests:
 
-Run the unit tests from the root folder using:
+Run the unit tests from the project folder ```eshop/``` using:
 ```
 python3 manage.py test --nomigrations
 ```
@@ -48,6 +48,6 @@ during the tests. For this reason ```django-test-without-migrations``` is used.
 ### Notes:
 
 The website uses a free template from [Colorlib](https://colorlib.com/).
-The JavaScript web app funcionality is located in ```ebag/static/js/main.js```.
-The ```test-img.png``` in the ```ebag/static/images``` folder
+The JavaScript web app funcionality is located in ```eshop/ebag/static/js/main.js```.
+The ```test-img.png``` in the ```eshop/ebag/static/images``` folder
 is used by the unit tests and must be present in that location.
