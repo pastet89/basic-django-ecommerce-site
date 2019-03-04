@@ -12,7 +12,7 @@ File Encoding         : 65001
 
 Date: 2019-02-28 17:04:09
 */
-
+USE `eshop`;
 SET FOREIGN_KEY_CHECKS=0;
 
 -- ----------------------------
@@ -252,6 +252,7 @@ INSERT INTO `django_migrations` VALUES ('14', 'ebag', '0001_initial', '2019-02-2
 INSERT INTO `django_migrations` VALUES ('15', 'sessions', '0001_initial', '2019-02-26 10:54:41');
 INSERT INTO `django_migrations` VALUES ('16', 'ebag', '0002_auto_20190226_1106', '2019-02-26 11:07:04');
 INSERT INTO `django_migrations` VALUES ('17', 'ebag', '0003_remove_product_slug', '2019-02-26 14:11:47');
+INSERT INTO `django_migrations` VALUES ('18', 'admin', '0003_logentry_add_action_flag_choices', '2019-03-04 23:33:25');
 
 -- ----------------------------
 -- Table structure for django_session

@@ -15,7 +15,6 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
@@ -25,7 +24,9 @@ SECRET_KEY = '8+-17lggd84yk)=%z)_#m=zr!c6ds13im^5om3o+&&icxd@46h'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# ALLOWED_HOSTS: List of allowed hosts that this Django site can serve.
+# Set to '*' because of the Docker container, consider changing it in production.
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -82,9 +83,10 @@ WSGI_APPLICATION = 'eshop.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'OPTIONS': {
-            'read_default_file': f'{BASE_DIR}/config/my.cnf',
-        }
+        'PASSWORD': 'eshop_pass',
+        'USER': 'eshop_user',
+        'NAME': 'eshop',
+        'HOST': 'db',
     }
 }
 
@@ -126,6 +128,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = "/static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "ebag", "static")
+
 MEDIA_ROOT = os.path.join(BASE_DIR, "ebag", "static", "images")
 MEDIA_URL = STATIC_URL + "images/"
 
