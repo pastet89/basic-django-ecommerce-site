@@ -39,7 +39,7 @@ python3 manage.py runserver
 ```
 Browse the website at ```127.0.0.1:8000```, add items to cart and checkout.
 
-### Tests:
+## Tests:
 
 Run the unit tests from the project folder ```eshop/``` using:
 ```
