@@ -48,7 +48,7 @@ python3 manage.py test --nomigrations
 The ```--nomigrations``` flag is used to avoid a strange problem related the creation of a migrations table
 during the tests. For this reason ```django-test-without-migrations``` is used.
 
-### Running the app in Docker containers
+## Running the app in a Docker container
 
 The app by default uses the Django test server, however, you can also run it using Nginx and Gunicorn
 in a Docker container if you have installed [docker-compose](https://docs.docker.com/compose/install/). 
@@ -69,7 +69,9 @@ DATABASES = {
     }
 }
 ``` 
-3. Build the Docker images and create the containers. From the ```docker/``` folder run:
+3. Build the Docker images and create the containers. There are three containers: 
+one for the Django app and Gunicorn, one for MySQL and one for Nginx.
+From the ```docker/``` folder run:
 ```
 docker-compose up -d
 ```
