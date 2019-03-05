@@ -3,7 +3,9 @@
 Contains admin panel from which can be created nested categories
 and added/updates products with images. The user can view the 
 products within a category, add products to cart and edit the cart.
-The checkout process simply clears the cart session.
+The checkout process simply clears the cart session. The front-end functionality
+is based on jQuery. The website can be run as a standalone using the Django's
+built-in test server, or in a Docker container with Nginx and Gunicorn.
 
 ## Requirements:
 
@@ -97,6 +99,6 @@ docker-compose down
 ### Notes:
 
 The website uses a free template from [Colorlib](https://colorlib.com/).
-The JavaScript web app funcionality is located in ```eshop/ebag/static/js/main.js```.
+The jQuery web app funcionality is located in ```eshop/ebag/static/js/main.js```.
 The ```test-img.png``` in the ```eshop/ebag/static/images``` folder
 is used by the unit tests and must be present in that location.
