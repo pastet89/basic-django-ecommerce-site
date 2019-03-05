@@ -32,7 +32,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
-    # default:
+    # Default:
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -40,10 +40,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     
-    # own:
+    # Own:
     'ebag',
-    'mptt',
+    'mptt', # Unlimited neseted subcategories
     'test_without_migrations',
+    # Deletes uploaded files if needed after an object removal/update
+    'django_cleanup', 
 ]
 
 MIDDLEWARE = [
