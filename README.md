@@ -4,8 +4,8 @@ Contains admin panel from which can be created nested categories
 and added/updates products with images. The user can view the 
 products within a category, add products to cart and edit the cart.
 The checkout process simply clears the cart session. The front-end functionality
-is based on jQuery. The website can be run as a standalone using the Django's
-built-in test server, or in a Docker container with Nginx and Gunicorn.
+is based on jQuery. The website can be run using the Django's
+built-in test server, or in a Docker container using Nginx and Gunicorn.
 
 ## Requirements:
 
