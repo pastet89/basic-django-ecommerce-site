@@ -23,7 +23,7 @@ mysql> source eshop/db.sql;
 ```
 2. Install the required packages:
 ```
-pip3 install -r requirements.txt
+pip install -r requirements.txt
 ```
 3. Enter your MySQL connection details in ```eshop/eshop/settings.py```. The default values you will find there
 are used inside the Docker container, hence the ```db``` value for the database host. Feel free to change them
@@ -37,7 +37,7 @@ uses the default Django admin app, located at ```YOUR_HOST/admin```.
 You can login with user ```admin``` and password ```EbagAdmin123```.
 From the project folder ```eshop/``` run the Django test server:
 ```
-python3 manage.py runserver
+python manage.py runserver
 ```
 Browse the website at ```127.0.0.1:8000```, add items to cart and checkout.
 
@@ -45,7 +45,7 @@ Browse the website at ```127.0.0.1:8000```, add items to cart and checkout.
 
 Run the unit tests from the project folder ```eshop/``` using:
 ```
-python3 manage.py test --nomigrations
+python manage.py test --nomigrations
 ```
 The ```--nomigrations``` flag is used to avoid a strange problem related the creation of a migrations table
 during the tests. For this reason ```django-test-without-migrations``` is used.
@@ -57,7 +57,7 @@ in a Docker container if you have installed [docker-compose](https://docs.docker
 To do so:
 1. Collect the static files. From the project folder ```eshop/``` run:
 ```
-python3 manage.py collectstatic --no-input
+python manage.py collectstatic --no-input
 ```
 2. Make sure that the database settings in ```eshop/eshop/settings.py``` are as follows:
 ```
