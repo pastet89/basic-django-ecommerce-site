@@ -80,7 +80,9 @@ docker-compose up -d
 This will take a while (a few minutes as all images and dependencies need to be
 downloaded, built and installed).
 You might need to wait a few seconds after that before the database becomes available and you can run the app.
+
 4. You can now open the app in the browser at ```http://localhost:8000```
+
 5. Running tests in the Docker container. From the ```docker/``` folder run:
 ```
 docker-compose exec djangoapp sh -c 'cd /opt/services/djangoapp/eshop && python manage.py test --nomigrations'
